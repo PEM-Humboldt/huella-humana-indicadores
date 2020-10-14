@@ -1,0 +1,8 @@
+name: huella-humana-indicadores
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - fiona
+  - numpy
+  - rasterio
