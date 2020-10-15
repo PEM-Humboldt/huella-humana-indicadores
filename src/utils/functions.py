@@ -10,7 +10,39 @@
 #
 #
 # -----------------------------------------------------------------------
+from typing import Generator
+
+import geopandas
 import numpy as np
+from shapely.geometry import shape
+
+
+def shapes_to_geodataframe(
+    features: Generator, crs: str, field_name: str = "value"
+) -> geopandas.geodataframe.GeoDataFrame:
+    """
+    
+    Parameters
+    ----------
+    features:   generator returned by the rasterio.features.shapes
+                function.
+    crs:        well-known text of a coordinate reference system.
+    field_name: name of the column to store the raster's original pixel
+                value.
+
+    Returns
+    -------
+    GeoDataFrame with all the features and their respective values.
+    """
+    # Create empty dictionary to store the features geometries and
+    # values.
+    results = {field_name: [], "geometry": []}
+
+    for i, feature in enumerate(features):
+        results["geometry"].append(shape(feature[0]))
+        results[field_name].append(feature[1])
+
+    return geopandas.GeoDataFrame(results, crs=crs)
 
 
 def reclassify_array(arr: np.ndarray, value_map: list) -> np.ndarray:
@@ -52,10 +84,12 @@ def reclassify_array(arr: np.ndarray, value_map: list) -> np.ndarray:
            [2, 2, 1, 2],
            [2, 1, 1, 1]])
     """
-    # Validate value_map input
+
+    # Validate value_map input.
+    assert isinstance(value_map, (list, tuple))
     for item in value_map:
-        assert (len(item) == 2)
-        assert (len(item[0]) == 2)
+        assert len(item) == 2
+        assert len(item[0]) == 2
         assert isinstance(item[0][0], (float, int))
         assert isinstance(item[0][1], (float, int))
         assert isinstance(item[1], (float, int))

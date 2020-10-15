@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - fiona
+  - geopandas
   - numpy
   - rasterio
+  - shapely
