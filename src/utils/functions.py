@@ -14,35 +14,28 @@ from typing import Generator
 
 import geopandas
 import numpy as np
+import pandas as pd
 from shapely.geometry import shape
 
 
-def shapes_to_geodataframe(
-    features: Generator, crs: str, field_name: str = "value"
-) -> geopandas.geodataframe.GeoDataFrame:
+def compute_protection(df: pd.DataFrame, fields: list) -> pd.Series:
     """
-    
+
     Parameters
     ----------
-    features:   generator returned by the rasterio.features.shapes
-                function.
-    crs:        well-known text of a coordinate reference system.
-    field_name: name of the column to store the raster's original pixel
-                value.
+    df:
+    fields:
 
     Returns
     -------
-    GeoDataFrame with all the features and their respective values.
+
     """
-    # Create empty dictionary to store the features geometries and
-    # values.
-    results = {field_name: [], "geometry": []}
+    # Validate that all fields passed are present in the DataFrame.
+    assert all(field in df.columns for field in fields)
 
-    for i, feature in enumerate(features):
-        results["geometry"].append(shape(feature[0]))
-        results[field_name].append(feature[1])
+    binary_values = (df[fields] > 0).astype(int)
+    return binary_values.apply(lambda x: "".join(x.values.astype(str)), axis=1)
 
-    return geopandas.GeoDataFrame(results, crs=crs)
 
 
 def reclassify_array(arr: np.ndarray, value_map: list) -> np.ndarray:
@@ -107,3 +100,34 @@ def reclassify_array(arr: np.ndarray, value_map: list) -> np.ndarray:
         new_arr = np.where(mask, value, new_arr)
 
     return new_arr
+
+
+def shapes_to_geodataframe(
+        features: Generator, crs: str, field_name: str = "value"
+) -> geopandas.GeoDataFrame:
+    """
+
+    Parameters
+    ----------
+    features:   generator returned by the rasterio.features.shapes
+                function.
+    crs:        well-known text of a coordinate reference system.
+    field_name: name of the column to store the raster's original pixel
+                value.
+
+    Returns
+    -------
+    Tuple with:
+        - GeoDataFrame with all the features and their respective
+        values.
+        - Field name.
+    """
+    # Create empty dictionary to store the features geometries and
+    # values.
+    results = {field_name: [], "geometry": []}
+
+    for i, feature in enumerate(features):
+        results["geometry"].append(shape(feature[0]))
+        results[field_name].append(feature[1])
+
+    return geopandas.GeoDataFrame(results, crs=crs), field_name
