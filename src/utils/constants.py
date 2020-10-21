@@ -47,3 +47,8 @@ HF_DISSOLVE_FIELDS = [
 ]
 
 AREA_FACTOR = 0.0001
+
+# TODO: write description
+CREATE_HF_INDICATORS_DESCRIPTION = """
+Script description...
+"""

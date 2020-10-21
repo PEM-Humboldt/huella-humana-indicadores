@@ -18,7 +18,7 @@ import pandas as pd
 from shapely.geometry import shape
 
 
-def compute_protection(df: pd.DataFrame, fields: list) -> pd.Series:
+def compute_protection_sequence(df: pd.DataFrame, fields: list) -> pd.Series:
     """
 
     Parameters
@@ -37,8 +37,7 @@ def compute_protection(df: pd.DataFrame, fields: list) -> pd.Series:
     return binary_values.apply(lambda x: "".join(x.values.astype(str)), axis=1)
 
 
-
-def reclassify_array(arr: np.ndarray, value_map: list) -> np.ndarray:
+def reclassify(arr: np.ndarray, value_map: list) -> np.ndarray:
     """
     Reclassifies an array by replacing values inside specified ranges
     with new values.
@@ -71,7 +70,7 @@ def reclassify_array(arr: np.ndarray, value_map: list) -> np.ndarray:
            [6, 5, 4, 6],
            [8, 1, 1, 2]])
     >>> value_map = [((1, 4), 1), ((5, 9), 2)]
-    >>> reclassify_array(arr, value_map)
+    >>> reclassify(arr, value_map)
     array([[2, 2, 1, 2],
            [2, 1, 1, 2],
            [2, 2, 1, 2],
