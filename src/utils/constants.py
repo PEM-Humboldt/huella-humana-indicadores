@@ -43,7 +43,7 @@ PROTECTION_FIELDS = [
 HF_DISSOLVE_FIELDS = [
     HF_FIELD_NAMES.get("category"),
     HF_FIELD_NAMES.get("year"),
-    HF_FIELD_NAMES.get("protected")
+    HF_FIELD_NAMES.get("protection")
 ]
 
 AREA_FACTOR = 0.0001
