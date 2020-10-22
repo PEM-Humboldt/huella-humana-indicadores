@@ -21,7 +21,7 @@ import rasterio
 from rasterio.features import shapes
 from rasterstats import zonal_stats
 
-from src.utils.constants import (
+from utils.constants import (
     CREATE_HF_INDICATORS_DESCRIPTION,
     RECLASSIFICATION_MAP,
     HF_FIELD_NAMES,
@@ -30,7 +30,7 @@ from src.utils.constants import (
     HF_DISSOLVE_FIELDS,
     AREA_FACTOR
 )
-from src.utils.functions import (
+from utils.functions import (
     reclassify,
     shapes_to_geodataframe,
     compute_protection_sequence,
@@ -89,8 +89,8 @@ def main(
 
         # Vectorize the reclassified raster and convert all the features
         # to a GeoDataFrame. A mask specifying non-NoData values must be
-        # passed to the shapes function in order to avoid vectorizing
-        # those values.
+        # passed to the shapes function in order to avoid vectorization
+        # of those values.
         mask = arr != src.nodata
         features = shapes(arr, mask=mask, connectivity=8, transform=src.transform)
         features, value_field = shapes_to_geodataframe(features, src.crs.to_string())
@@ -122,6 +122,8 @@ def main(
     # TODO: document these steps.
     dissolve_fields = list(geofences.columns) + hf_dissolve_fields
     dissolve_fields.remove("geometry")
+    if None in dissolve_fields:
+        dissolve_fields.remove(None)
     result = result.dissolve(by=dissolve_fields, aggfunc="mean")
     result = result.reset_index()
 
@@ -149,7 +151,7 @@ if __name__ == "__main__":
     parser.add_argument("geofences_path", type=str, help="Path of the geofences file.")
     parser.add_argument("rasters_path", type=str, help="Path of the raster files.")
     parser.add_argument(
-        "-crs", type=str, help="EPSG code of the new coordinate reference system"
+        "-crs", type=str, help="EPSG code of the new coordinate reference system."
     )
     args = parser.parse_args()
 
