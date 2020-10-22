@@ -33,7 +33,7 @@ from utils.constants import (
 from utils.functions import (
     reclassify,
     shapes_to_geodataframe,
-    compute_protection_sequence,
+    compute_protection_sequence
 )
 
 
@@ -47,7 +47,7 @@ def main(
     protection_fields: list,
     hf_dissolve_fields: list,
     area_factor: float = 1.0,
-    output_crs: str = None,
+    output_crs: str = None
 ) -> None:
     """
 
@@ -165,5 +165,5 @@ if __name__ == "__main__":
         PROTECTION_FIELDS,
         HF_DISSOLVE_FIELDS,
         area_factor=AREA_FACTOR,
-        output_crs=args.crs,
+        output_crs=args.crs
     )

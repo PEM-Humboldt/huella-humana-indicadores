@@ -19,7 +19,7 @@ HF_FIELD_NAMES = {
     "average": "hf_avg",
     "category": "hf_cat",
     "protection": "binary_protected",
-    "year": "hf_year",
+    "year": "hf_year"
 }
 
 PROTECTION_FIELDS = [
@@ -37,7 +37,7 @@ PROTECTION_FIELDS = [
     "sff",
     "sfl",
     "vp",
-    "ar",
+    "ar"
 ]
 
 HF_DISSOLVE_FIELDS = [
