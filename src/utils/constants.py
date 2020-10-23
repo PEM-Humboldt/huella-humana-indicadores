@@ -28,6 +28,7 @@ HF_FIELD_NAMES = {
     "area": "area_ha",
     "average": "hf_avg",
     "category": "hf_cat",
+    "persistence": "hf_pers",
     "protection": "binary_protected",
     "year": "hf_year"
 }
@@ -55,6 +56,8 @@ HF_DISSOLVE_FIELDS = [
     HF_FIELD_NAMES.get("year"),
     HF_FIELD_NAMES.get("protection")
 ]
+
+PERSISTENCE_DISSOLVE_FIELDS = [HF_FIELD_NAMES.get("persistence")]
 
 AREA_FACTOR = 0.0001
 

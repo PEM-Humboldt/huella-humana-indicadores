@@ -20,8 +20,18 @@ import numpy as np
 import rasterio
 from rasterio.features import shapes
 
-from src.utils.constants import RECLASSIFICATION_MAP, CREATE_HF_PERSISTENCE_DESCRIPTION
-from src.utils.functions import (
+from utils.constants import (
+    RECLASSIFICATION_MAP,
+    CREATE_HF_PERSISTENCE_DESCRIPTION,
+    PERSISTENCE_OTHER_VALUE,
+    PERSISTENCE_CATEGORY_MAP,
+    PERSISTENCE_NODATA,
+    HF_FIELD_NAMES,
+    PROTECTION_FIELDS,
+    PERSISTENCE_DISSOLVE_FIELDS,
+    AREA_FACTOR
+)
+from utils.functions import (
     reclassify,
     shapes_to_geodataframe,
     compute_protection_sequence
@@ -40,7 +50,7 @@ def main(
     protection_fields: list,
     hf_dissolve_fields: list,
     area_factor: float,
-    output_crs: str = None
+    output_crs: str = None,
 ) -> None:
 
     # Grab output folder from output path and create the folder
@@ -75,12 +85,13 @@ def main(
     # Assign human foot print persistence categories based on the
     # reclassified values.
     categories = result[value_field].map(category_map)
-    result[hf_field_names.get("category")] = categories
+    result[hf_field_names.get("persistence")] = categories
 
     protection_sequences = compute_protection_sequence(result, protection_fields)
     result[hf_field_names.get("protection")] = protection_sequences
 
     # TODO: document these steps.
+    # TODO: not all hf dissolve fields are present in persistence
     dissolve_fields = list(geofences.columns) + hf_dissolve_fields
     dissolve_fields.remove("geometry")
     if None in dissolve_fields:
@@ -108,3 +119,25 @@ def main(
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description=CREATE_HF_PERSISTENCE_DESCRIPTION)
+    parser.add_argument("output_path", type=str, help="Path of the output file.")
+    parser.add_argument("geofences_path", type=str, help="Path of the geofences file.")
+    parser.add_argument("rasters_path", type=str, help="Path of the raster files.")
+    parser.add_argument(
+        "-crs", type=str, help="EPSG code of the new coordinate reference system."
+    )
+    args = parser.parse_args()
+
+    main(
+        args.output_path,
+        args.geofences_path,
+        args.rasters_path,
+        RECLASSIFICATION_MAP,
+        PERSISTENCE_OTHER_VALUE,
+        PERSISTENCE_CATEGORY_MAP,
+        PERSISTENCE_NODATA,
+        HF_FIELD_NAMES,
+        PROTECTION_FIELDS,
+        PERSISTENCE_DISSOLVE_FIELDS,
+        AREA_FACTOR,
+        output_crs=args.crs
+    )
