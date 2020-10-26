@@ -28,7 +28,11 @@ from utils.constants import (
     CATEGORY_MAP,
     PROTECTION_FIELDS,
     HF_DISSOLVE_FIELDS,
-    AREA_FACTOR
+    AREA_FACTOR,
+    OUTPUT_PATH_HELP_TEXT,
+    GEOFENCES_PATH_HELP_TEXT,
+    RASTERS_PATH_HELP_TEXT,
+    CRS_HELP_TEXT
 )
 from utils.functions import (
     reclassify,
@@ -147,12 +151,10 @@ def main(
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description=CREATE_HF_INDICATORS_DESCRIPTION)
-    parser.add_argument("output_path", type=str, help="Path of the output file.")
-    parser.add_argument("geofences_path", type=str, help="Path of the geofences file.")
-    parser.add_argument("rasters_path", type=str, help="Path of the raster files.")
-    parser.add_argument(
-        "-crs", type=str, help="EPSG code of the new coordinate reference system."
-    )
+    parser.add_argument("output_path", type=str, help=OUTPUT_PATH_HELP_TEXT)
+    parser.add_argument("geofences_path", type=str, help=GEOFENCES_PATH_HELP_TEXT)
+    parser.add_argument("rasters_path", type=str, help=RASTERS_PATH_HELP_TEXT)
+    parser.add_argument("-crs", type=str, help=CRS_HELP_TEXT)
     args = parser.parse_args()
 
     main(

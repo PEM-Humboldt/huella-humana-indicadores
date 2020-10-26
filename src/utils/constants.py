@@ -61,12 +61,40 @@ PERSISTENCE_DISSOLVE_FIELDS = [HF_FIELD_NAMES.get("persistence")]
 
 AREA_FACTOR = 0.0001
 
-# TODO: write description
+
 CREATE_HF_INDICATORS_DESCRIPTION = """
-Script description...
+Creates a geographic vector layer with the category, year and average of the human 
+footprint by intersecting the original product with a specific geofences geographic 
+vector layer.
 """
 
 # TODO: write description
 CREATE_HF_PERSISTENCE_DESCRIPTION = """
-Script description...
+Creates a geographic vector layer with the persistence category of the human 
+footprint across time by intersecting the original product with a specific geofences 
+geographic vector layer.
 """
+
+OUTPUT_PATH_HELP_TEXT = """
+Relative or absolute path (including the extension) of the output file. If the folder
+where the output file will be created does not exist, the folder is automatically 
+created. Existing files will be overwritten. Example ./results/test/hf_indicators.shp
+"""""
+
+GEOFENCES_PATH_HELP_TEXT = """
+Relative or absolute path of the input geofences file. Example: ./data/test/geofences.shp
+"""
+
+RASTERS_PATH_HELP_TEXT = """
+Relative or abolsute path of the folder containing the raster(s) of the original 
+Human Footprint product. Rasters must be GeoTIFF files and their filenames must contain
+(anywhere on the name) a four-digit sequence representing the year of the product (e.g.
+IHEH_1970.tif). Example: ./data/test/IHEH
+"""
+
+CRS_HELP_TEXT = """
+String with the EPSG code of the new coordinate reference system in the form epsg:code.
+For example: epsg:4326
+"""
+
+
