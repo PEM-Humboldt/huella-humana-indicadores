@@ -1,4 +1,4 @@
-name: huella-humana-indicadores
+name: hf-indicators
 channels:
   - conda-forge
   - defaults
