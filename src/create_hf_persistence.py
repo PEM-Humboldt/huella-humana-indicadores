@@ -64,6 +64,64 @@ def main(
     area_factor: float,
     output_crs: str = None,
 ) -> None:
+    """
+    Creates a geographic vector layer resulting from the intersection
+    of vectorized Human Footprint persistence categories and a specific
+    layer of geofences. Human Footprint persistence categories are
+    computed across all rasters and are then vectorized and intersected.
+    The output layer contains a field with the persistence category for
+    ech polygon. Furthermore, protection-related fields from the
+    geofences are used to compute a protection-level field in the output
+    layer. The output layer is dissolved by a configurable list of fields
+    and is optionally reprojected to a specified coordinate reference
+    system.
+
+    Parameters
+    ----------
+    output_path:          Relative or absolute path (including the
+                          extension) of the output file.
+    geofences_path:       Relative or absolute path of the input
+                          geofences file.
+    rasters_path:         Relative or absolute path of the folder
+                          containing the raster(s) of the original Human
+                          Footprint product.
+    reclassification_map: List of ranges of old values and their
+                          corresponding new values to reclassify a NumPy
+                          array.
+    other_value:          Value to assign to pixels where the Human
+                          Footprint category is not persistent across
+                          time.
+    category_map:         Category names for each of the new values in
+                          reclassification_map.
+    new_nodata:           NoData value to use for the computed
+                          persistence array before vectorizing it.
+    hf_field_names:       Dictionary containing user defined names for
+                          the output fields.
+    protection_fields:    Fields to be used in the computation of the
+                          output protection field.
+    hf_dissolve_fields:   Human Footprint-related fields to use in the
+                          dissolve process of the output layer.
+    area_factor:          Factor to multiply the resulting area by.
+                          Useful to convert meters to other units (e.g.
+                          hectares).
+    output_crs:           Coordinate reference system to reproject the
+                          output layer to. Must be in the form
+                          epsg:{code}.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Input Human Footprint products and geofences layer must share the
+    same coordinate reference system. Otherwise, the intersection between
+    them will fail.
+
+    Area will only be computed if the coordinate reference system of the
+    input files is projected. The reason behind this is to avoid area
+    computations in non-planar units (e.g. degrees).
+    """
 
     # Grab output folder from output path and create the folder
     # if it does not exist already.
