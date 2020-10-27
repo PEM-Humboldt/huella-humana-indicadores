@@ -1,5 +1,4 @@
 # -----------------------------------------------------------------------
-#
 # Authors
 # -------
 # Marcelo Villa-Piñeros (mvilla@humboldt.org.co)
@@ -7,8 +6,15 @@
 #
 # Purpose
 # -------
-#
-#
+# Creates a geographic vector layer with the Human Footprint year,
+# category and average. The layer is created by intersecting the
+# vectorized Human Footprint rasters with a specific geofences layer.
+# This script has a command line-like interface and it is supposed to be
+# executed from a terminal by passing a series of positional arguments.
+# To execute the script, open a terminal and run the following command:
+# python create_hf_indicators.py -h.
+# This will display a help message with the usage of the script and the
+# description of the parameters.
 # -----------------------------------------------------------------------
 import argparse
 import glob
@@ -54,23 +60,60 @@ def main(
     output_crs: str = None
 ) -> None:
     """
+    Creates a geographic vector layer resulting from the intersection
+    of vectorized Human Footprint categories and a specific layer of
+    geofences. Human Footprint categories are vectorized and intersected
+    for each individual Human Footprint product (each individual product
+    corresponds to a unique year). The output layer contains three fields
+    related to the Human Footprint product: (1) category, (2) year and
+    (3) average. The first two result from the intersection between the
+    vectorized categories and the geofences. The third one is computed
+    using zonal statistics. Furthermore, protection-related fields from
+    the geofences are used to compute a protection-level field in the
+    output layer. The output layer is dissolved by a configurable list of
+    fields and is optionally reprojected to a specified coordinate
+    reference system.
 
     Parameters
     ----------
-    output_path
-    geofences_path
-    rasters_path
-    reclassification_map
-    hf_field_names
-    category_map
-    protection_fields
-    hf_dissolve_fields
-    area_factor
-    output_crs
+    output_path:          Relative or absolute path (including the
+                          extension) of the output file.
+    geofences_path:       Relative or absolute path of the input
+                          geofences file.
+    rasters_path:         Relative or absolute path of the folder
+                          containing the raster(s) of the original Human
+                          Footprint product.
+    reclassification_map: List of ranges of old values and their
+                          corresponding new values to reclassify a NumPy
+                          array.
+    hf_field_names:       Dictionary containing user defined names for
+                          the output fields.
+    category_map:         Category names for each of the new values in
+                          reclassification_map.
+    protection_fields:    Fields to be used in the computation of the
+                          output protection field.
+    hf_dissolve_fields:   Human Footprint-related fields to use in the
+                          dissolve process of the output layer.
+    area_factor:          Factor to multiply the resulting area by.
+                          Useful to convert meters to other units (e.g.
+                          hectares).
+    output_crs:           Coordinate reference system to reproject the
+                          output layer to. Must be in the form
+                          epsg:{code}.
 
     Returns
     -------
     None
+
+    Notes
+    -----
+    Input Human Footprint products and geofences layer must share the
+    same coordinate reference system. Otherwise, the intersection between
+    them will fail.
+
+    Area will only be computed if the coordinate reference system of the
+    input files is projected. The reason behind this is to avoid area
+    computations in non-planar units (e.g. degrees).
     """
 
     # Grab output folder from output path and create the folder
@@ -80,6 +123,8 @@ def main(
         os.makedirs(output_folder)
 
     geofences = geopandas.read_file(geofences_path)
+
+    # Create empty GeoDataFrame to store the result.
     result = geopandas.GeoDataFrame()
 
     raster_filenames = sorted(glob.glob(os.path.join(rasters_path, "*.tif")))
@@ -92,9 +137,9 @@ def main(
         arr = reclassify(arr, reclassification_map)
 
         # Vectorize the reclassified raster and convert all the features
-        # to a GeoDataFrame. A mask specifying non-NoData values must be
-        # passed to the shapes function in order to avoid vectorization
-        # of those values.
+        # to a GeoDataFrame. A mask for non-NoData values must be passed
+        # to the shapes function in order to avoid vectorization of those
+        # values.
         mask = arr != src.nodata
         features = shapes(arr, mask=mask, connectivity=8, transform=src.transform)
         features, value_field = shapes_to_geodataframe(features, src.crs.to_string())
@@ -123,7 +168,9 @@ def main(
     protection_sequences = compute_protection_sequence(result, protection_fields)
     result[hf_field_names.get("protection")] = protection_sequences
 
-    # TODO: document these steps.
+    # Get a list of all the dissolve fields and use them to dissolve
+    # the GeoDataFrame. Index must be reset to keep fields used as fields
+    # and not as index.
     dissolve_fields = list(geofences.columns) + hf_dissolve_fields
     dissolve_fields.remove("geometry")
     if None in dissolve_fields:
@@ -131,16 +178,16 @@ def main(
     result = result.dissolve(by=dissolve_fields, aggfunc="mean")
     result = result.reset_index()
 
-    # Remove unused fields
+    # Remove unused fields.
     result = result.drop(protection_fields + [value_field], axis=1)
 
-    # Compute area only if hte coordinate reference system is projected.
+    # Compute area only if the coordinate reference system is projected.
     if result.crs.is_projected:
         result[hf_field_names.get("area")] = result.geometry.area * area_factor
     else:
         warnings.warn("Area was not computed because input data is not projected.")
 
-    # Reproject file if and output coordinate reference system was
+    # Reproject file if an output coordinate reference system was
     # specified.
     if output_crs:
         result = result.to_crs(output_crs)
