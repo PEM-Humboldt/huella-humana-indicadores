@@ -78,13 +78,11 @@ Si utilizó `venv`, siga los pasos de activación expuestos durante el proceso d
 
  Ambas herramientas están expuestas a través de una interfaz de de línea de comandos (CLI), lo cual quiere decir que se ejecutan desde una terminal. Adicionalmente, ambas herramientas tienen una serie de parámetros posicionales requeridos y un parámetro opcional para su ejecución.
  
- Para obtener una lista de los párametros y su descripción, ejecute el siguiente comando:
+ Para obtener una lista de los párametros y su descripción, ejecute alguno de los siguientes comandos:
  
 ```
 python src/create_hf_indicators.py -h
 ```
-
-o
 
 ```
 python src/create_hf_persistence.py -h
