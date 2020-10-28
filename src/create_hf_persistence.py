@@ -158,7 +158,8 @@ def main(
     # shapes function in order to avoid vectorization of those values.
     mask = arr != new_nodata
     features = shapes(arr, mask=mask, connectivity=8, transform=src.transform)
-    features, value_field = shapes_to_geodataframe(features, src.crs.to_string())
+    features = shapes_to_geodataframe(features, src.crs.to_string())
+    value_field = features.columns[0]
 
     result = geopandas.overlay(geofences, features, how="intersection")
 

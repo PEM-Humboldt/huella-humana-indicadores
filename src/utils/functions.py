@@ -121,7 +121,7 @@ def reclassify(arr: np.ndarray, value_map: list) -> np.ndarray:
 
 
 def shapes_to_geodataframe(
-        features: Generator, crs: str, field_name: str = "value"
+        shapes: Generator, crs: str = None, field_name: str = "value"
 ) -> geopandas.GeoDataFrame:
     """
     Converts rasterio.features.shapes function output (which is a
@@ -130,7 +130,7 @@ def shapes_to_geodataframe(
 
     Parameters
     ----------
-    features:   generator returned by the rasterio.features.shapes
+    shapes:     generator returned by the rasterio.features.shapes
                 function.
     crs:        well-known text of a coordinate reference system.
     field_name: name of the column to store the raster's original pixel
@@ -138,18 +138,39 @@ def shapes_to_geodataframe(
 
     Returns
     -------
-    Tuple with:
-        - GeoDataFrame with all the features and their respective
-        values.
-        - Field name.
+    GeoDataFrame with all the features and their respective values.
+
+    Examples
+    --------
+    >>> np.random.seed(21)
+    >>> arr = np.random.randint(2, size=(5, 5), dtype=np.uint8)
+    >>> arr
+    array([[1, 1, 1, 0, 1],
+           [0, 1, 0, 0, 1],
+           [1, 0, 0, 1, 0],
+           [0, 0, 0, 1, 0],
+           [0, 1, 0, 1, 0]], dtype=uint8)
+    >>> shapes = rasterio.features.shapes(arr)
+    >>> shapes
+    <generator object shapes at 0x7f9ace463820>
+    >>> shapes_to_geodataframe(shapes)
+       value                                           geometry
+    0    1.0  POLYGON ((0.00000 0.00000, 0.00000 1.00000, 1....
+    1    1.0  POLYGON ((4.00000 0.00000, 4.00000 2.00000, 5....
+    2    0.0  POLYGON ((0.00000 1.00000, 0.00000 2.00000, 1....
+    3    1.0  POLYGON ((0.00000 2.00000, 0.00000 3.00000, 1....
+    4    1.0  POLYGON ((3.00000 2.00000, 3.00000 5.00000, 4....
+    5    0.0  POLYGON ((4.00000 2.00000, 4.00000 5.00000, 5....
+    6    0.0  POLYGON ((3.00000 0.00000, 3.00000 1.00000, 2....
+    7    1.0  POLYGON ((1.00000 4.00000, 1.00000 5.00000, 2....
     """
 
     # Create empty dictionary to store the features geometries and
     # values.
     results = {field_name: [], "geometry": []}
 
-    for i, feature in enumerate(features):
+    for i, feature in enumerate(shapes):
         results["geometry"].append(shape(feature[0]))
         results[field_name].append(feature[1])
 
-    return geopandas.GeoDataFrame(results, crs=crs), field_name
+    return geopandas.GeoDataFrame(results, crs=crs)
