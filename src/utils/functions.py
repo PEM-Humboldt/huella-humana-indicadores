@@ -1,5 +1,4 @@
 # -----------------------------------------------------------------------
-#
 # Authors
 # -------
 # Marcelo Villa-Piñeros (mvilla@humboldt.org.co)
@@ -7,8 +6,7 @@
 #
 # Purpose
 # -------
-#
-#
+# Contains helper functions used by both tools.
 # -----------------------------------------------------------------------
 from typing import Generator
 
@@ -20,16 +18,37 @@ from shapely.geometry import shape
 
 def compute_protection_sequence(df: pd.DataFrame, fields: list) -> pd.Series:
     """
+    Computes a binary protection sequence Series from a set of given
+    fields. For each field, a binary digit (i.e. 0 or 1) is assigned
+    depending whether that field value is greater than zero or not. All
+    values greater than zero are assigned 1.
 
     Parameters
     ----------
-    df:
-    fields:
+    df:      DataFrame to create a protection sequence Series from.
+    fields:  Fields in df to use to compute the protection sequence.
 
     Returns
     -------
+    Series with the protection sequences.
 
+    Examples
+    --------
+    >>> values = [[0, 0, 0, 27100002], [2060001, 0, 0, 0], [0, 0, 0,0]]
+    >>> fields = ["anu", "dcs", "dnmi", "drmi"]
+    >>> df = pd.DataFrame(values, columns=fields)
+    >>> df
+           anu  dcs  dnmi      drmi
+    0        0    0     0  27100002
+    1  2060001    0     0         0
+    2        0    0     0         0
+    >>> compute_protection_sequence(df, fields=["anu", "dnmi", "drmi"])
+    0    001
+    1    100
+    2    000
+    dtype: object
     """
+
     # Validate that all fields passed are present in the DataFrame.
     assert all(field in df.columns for field in fields)
 
@@ -105,6 +124,9 @@ def shapes_to_geodataframe(
         features: Generator, crs: str, field_name: str = "value"
 ) -> geopandas.GeoDataFrame:
     """
+    Converts rasterio.features.shapes function output (which is a
+    Generator with each individual vectorized feature) to a geopandas
+    DataFrame.
 
     Parameters
     ----------
@@ -121,6 +143,7 @@ def shapes_to_geodataframe(
         values.
         - Field name.
     """
+
     # Create empty dictionary to store the features geometries and
     # values.
     results = {field_name: [], "geometry": []}
