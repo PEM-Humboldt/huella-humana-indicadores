@@ -159,13 +159,13 @@ Los párametros posicionales y el parámetro opcional son iguales para ambas her
 Puede ejecutar la herramienta `create_hf_indicators.py` con el siguiente comando y los siguientes parámetros:
 
 ```
-python src/create_hf_indicators.py .results/test/hf_indicators.shp ./data/test/geofences.shp ./data/test/IHEH -c epsg:4326
+python src/create_hf_indicators.py ./results/test/hf_indicators.shp ./data/test/geofences.shp ./data/test/IHEH -c epsg:4326
 ```
 
 Puede ejecutar la herramienta `create_hf_persistence.py` de igual manera.
 
 ```
-python src/create_hf_persistence.py .results/test/hf_persistence.shp ./data/test/geofences.shp ./data/test/IHEH -c epsg:4326
+python src/create_hf_persistence.py ./results/test/hf_persistence.shp ./data/test/geofences.shp ./data/test/IHEH -c epsg:4326
 ```
 
 
