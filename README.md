@@ -3,7 +3,7 @@ Este repositorio contiene dos herramienta para crear las capas geográficas vect
 
 * `src/create_hf_indicators.py`: crea una capa vectorial con la categoría, año y promedio de Huella Humana. La capa resultante es generada a partir de la intersección de los productos originales (raster) con una capa vectorial de geocercas determinada.
 
-* `src/creatte_hf_persistence.py`: crea una capa con la categoría de persistencia de Huella Humana a través del tiempo. La capa resultante es generada a partir de la intersección de una categorización intermedia de persistencia a través de todos los productos originales (rasters) con una capa vectorial de geocercas determinada.
+* `src/create_hf_persistence.py`: crea una capa con la categoría de persistencia de Huella Humana a través del tiempo. La capa resultante es generada a partir de la intersección de una categorización intermedia de persistencia a través de todos los productos originales (rasters) con una capa vectorial de geocercas determinada.
 
 Adicionalmente, hay dos scripts auxiliares para la ejecución de la herramienta:
 
